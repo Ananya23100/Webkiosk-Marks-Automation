@@ -1,0 +1,42 @@
+name: WebKiosk Marks Monitor
+
+on:
+  workflow_dispatch:
+
+jobs:
+  monitor-marks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Run marks monitor
+        env:
+          WEBKIOSK_USERNAME: ${{ secrets.WEBKIOSK_USERNAME }}
+          WEBKIOSK_PASSWORD: ${{ secrets.WEBKIOSK_PASSWORD }}
+
+          COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
+          COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
+          COMPOSIO_GOOGLE_SHEETS_SPREADSHEET_ID: ${{ secrets.COMPOSIO_GOOGLE_SHEETS_SPREADSHEET_ID }}
+          COMPOSIO_GMAIL_TO: ${{ secrets.COMPOSIO_GMAIL_TO }}
+
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_WHATSAPP_FROM: ${{ secrets.TWILIO_WHATSAPP_FROM }}
+          TWILIO_WHATSAPP_TO: ${{ secrets.TWILIO_WHATSAPP_TO }}
+          TWILIO_NEW_TEMPLATE_SID: ${{ secrets.TWILIO_NEW_TEMPLATE_SID }}
+          TWILIO_UPDATED_TEMPLATE_SID: ${{ secrets.TWILIO_UPDATED_TEMPLATE_SID }}
+
+        run: |
+          python app/webkiosk.py
